@@ -1,0 +1,51 @@
+	<?php
+	$dbHost = "localhost";        //Location Of Database usually its localhost 
+	$dbUser = "root";            //Database User Name 
+	$dbPass = "";            //Database Password 
+	$dbDatabase = "userlogin";    //Database Name 
+	 
+	$db = mysqli_connect($dbHost,$dbUser,$dbPass)or die("Error connecting to database."); 
+	//Connect to the databasse 
+	mysqli_select_db($db, $dbDatabase)or die("Couldn't select the database."); 
+	session_start();
+	$usr = mysqli_real_escape_string($db, $_SESSION['username']);
+	
+	if(isset($_POST['view'])){
+
+		getFiles($db);  // call to a function
+	}
+
+	function getFiles($db){
+		$usr = mysqli_real_escape_string($db, $_SESSION['username']);
+		$sql = mysqli_query($db, "select file_name from images where user = '$usr'");
+		echo "<ul>";
+		while($temp = mysqli_fetch_assoc($sql)){
+				echo "<li><a href = 'Uploads/' download = '".$temp["file_name"]."'>".$temp['file_name']."</a></li>";
+			}
+		echo "</ul>";
+		echo "<a href = 'files.html'>Back</a>";
+	}
+	if(isset($_POST['Submit'])){
+		$uploads = "uploads/";
+		$fname = basename($_FILES['file']['name']);
+		$filePath = $uploads.$fname;
+		$fileType = pathinfo($filePath, PATHINFO_EXTENSION);
+		if(isset($_POST['Submit']) && !empty($_FILES['file']['name'])){
+			if(move_uploaded_file($_FILES['file']['tmp_name'], $filePath)){
+				$insert = mysqli_query($db, "INSERT into images (user, file_name) VALUES ('$usr', '".$fname."')");
+				if($insert){
+					$statusMsg = "The file ".$fname. " has been uploaded successfully.";
+				}else{
+					$statusMsg = "File upload failed, please try again.";
+				} 
+			}else{
+				$statusMsg = "Sorry, there was an error uploading your file.";
+			}
+		}else{
+			$statusMsg = 'Please select a file to upload.';
+		}
+		echo $statusMsg;
+		header("Location: files.html");
+	}
+
+?>

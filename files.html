@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	<p>Existing files:</p>
+	<form name = "files" action = "insertFile.php" method = "post" enctype="multipart/form-data">
+		<input type = "submit" name = "view">
+	</form>
+	<p>Enter new file:</p>
+	<form action = 'insertFile.php' enctype="multipart/form-data" method = "post">
+		<input type = 'file' name = 'file'>	
+		<input type = 'submit' name = 'Submit'>
+	</form>
+</body>
+</html>
